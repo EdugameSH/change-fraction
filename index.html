@@ -24,7 +24,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .game-title{font-family:'Gaegu',cursive;font-size:clamp(26px,5vw,52px);font-weight:700;text-align:center;line-height:1.2}
 .game-title span{display:block;font-size:clamp(14px,2.5vw,24px);color:var(--muted);font-weight:400;margin-top:4px}
 .animal-row{display:flex;gap:16px;font-size:clamp(28px,5vw,48px)}
-.info-box{font-size:clamp(12px,1.8vw,15px);color:var(--muted);text-align:center;line-height:2;max-width:340px}
+.info-box{font-size:clamp(12px,1.8vw,15px);color:var(--muted);text-align:center;line-height:2;max-width:380px}
 .start-btn{font-family:'Noto Sans KR',sans-serif;font-size:clamp(16px,2.5vw,24px);font-weight:700;padding:12px 44px;border-radius:50px;border:none;cursor:pointer;background:var(--text);color:#fff;transition:transform .1s,opacity .1s}
 .start-btn:hover{opacity:.85}
 .start-btn:active{transform:scale(.97)}
@@ -44,7 +44,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 @keyframes flashGreen{0%,20%{background:#a8d5b5}100%{background:var(--card)}}
 @keyframes flashRed{0%,20%{background:#f0a8ad}100%{background:var(--card)}}
 
-.player-header{display:flex;flex-direction:column;align-items:center;padding:8px 6px 6px;font-weight:700;flex-shrink:0}
+.player-header{display:flex;flex-direction:column;align-items:center;padding:8px 6px 6px;font-weight:700;flex-shrink:0;position:relative}
 .pc1 .player-header{background:var(--p1l);color:var(--p1d)}
 .pc2 .player-header{background:var(--p2l);color:var(--p2d)}
 .pc3 .player-header{background:var(--p3l);color:var(--p3d)}
@@ -53,6 +53,18 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .animal-name{font-size:clamp(10px,1.4vw,14px);font-weight:700;margin-top:2px}
 .pc1 .player-score{color:var(--p1)}.pc2 .player-score{color:var(--p2)}.pc3 .player-score{color:var(--p3)}.pc4 .player-score{color:var(--p4)}
 .player-score{font-size:clamp(13px,2vw,20px);font-weight:900;margin-top:2px}
+
+.combo-badge{display:inline-flex;align-items:center;gap:3px;margin-top:4px;padding:2px 8px;border-radius:20px;font-size:clamp(10px,1.4vw,13px);font-weight:900;min-height:20px;transition:transform .15s}
+.combo-badge.hidden{visibility:hidden}
+.combo-badge.pop{animation:comboPop .25s ease-out}
+@keyframes comboPop{0%{transform:scale(1.5)}100%{transform:scale(1)}}
+.pc1 .combo-badge{background:var(--p1);color:#fff}
+.pc2 .combo-badge{background:var(--p2);color:#fff}
+.pc3 .combo-badge{background:var(--p3);color:#fff}
+.pc4 .combo-badge{background:var(--p4);color:#fff}
+
+.score-popup{position:absolute;top:6px;right:8px;font-size:clamp(12px,1.8vw,16px);font-weight:900;pointer-events:none;animation:scoreFloat .9s ease-out forwards;opacity:0}
+@keyframes scoreFloat{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-28px)}}
 
 .player-body{padding:10px 8px;flex:1;display:flex;flex-direction:column;min-height:0}
 .question-box{text-align:center;padding:12px 4px;border-radius:10px;font-weight:900;flex-shrink:0}
@@ -63,7 +75,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 
 .mixed-num{display:inline-flex;align-items:center;gap:6px;font-size:clamp(22px,3.5vw,38px);font-weight:900;vertical-align:middle;line-height:1}
 .whole-part{font-size:1em}
-.frac-inline{display:inline-flex;flex-direction:column;align-items:center;gap:0;font-size:0.9em;line-height:1.15}
+.frac-inline{display:inline-flex;flex-direction:column;align-items:center;gap:0;font-size:.9em;line-height:1.15}
 .frac-top{display:block;text-align:center}
 .frac-bar{display:block;width:100%;min-width:1em;height:2.5px;background:currentColor;border-radius:1px}
 .frac-bot{display:block;text-align:center}
@@ -105,7 +117,10 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 <div id="start-screen" class="screen active">
   <div class="game-title">🔢 분수 대결!<span>대분수 → 가분수 변환 게임</span></div>
   <div class="animal-row">🐹 🐰 🐶 🐱</div>
-  <div class="info-box">⏱ 제한시간 <b>1분</b> &nbsp;|&nbsp; 정답 <b style="color:#1D9E75">+10점</b> &nbsp;|&nbsp; 오답 <b style="color:#E24B4A">-10점</b></div>
+  <div class="info-box">
+    ⏱ 제한시간 <b>1분</b> &nbsp;|&nbsp; 정답 <b style="color:#1D9E75">+10점</b> &nbsp;|&nbsp; 오답 <b style="color:#E24B4A">-10점</b><br>
+    🔥 연속 정답 시 콤보 보너스! (2콤보=20점, 3콤보=30점…)
+  </div>
   <button class="start-btn" onclick="startGame()">게임 시작!</button>
 </div>
 
@@ -138,8 +153,32 @@ const COLORS=[['var(--p1)','var(--p1l)','var(--p1d)'],['var(--p2)','var(--p2l)',
 let state={};let audioCtx=null;
 
 function getAudioCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
-function playCorrect(){try{const ctx=getAudioCtx(),now=ctx.currentTime;[[523.25,0],[659.25,.12],[783.99,.22],[1046.5,.32]].forEach(([f,t])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,now+t);g.gain.linearRampToValueAtTime(.22,now+t+.04);g.gain.exponentialRampToValueAtTime(.001,now+t+.25);o.start(now+t);o.stop(now+t+.28);});}catch(e){}}
-function playWrong(){try{const ctx=getAudioCtx(),now=ctx.currentTime;[[220,0,.18],[196,.2,.18]].forEach(([f,t,d])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sawtooth';o.frequency.value=f;g.gain.setValueAtTime(0,now+t);g.gain.linearRampToValueAtTime(.18,now+t+.03);g.gain.exponentialRampToValueAtTime(.001,now+t+d);o.start(now+t);o.stop(now+t+d+.05);});}catch(e){}}
+function playCorrect(combo){
+  try{
+    const ctx=getAudioCtx(),now=ctx.currentTime;
+    const base=combo>=3?600:combo===2?560:523.25;
+    [[base,0],[base*1.26,.1],[base*1.5,.2],[base*2,.3]].forEach(([f,t])=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.type='sine';o.frequency.value=f;
+      const vol=Math.min(0.1+combo*0.04,0.35);
+      g.gain.setValueAtTime(0,now+t);g.gain.linearRampToValueAtTime(vol,now+t+.04);g.gain.exponentialRampToValueAtTime(.001,now+t+.28);
+      o.start(now+t);o.stop(now+t+.32);
+    });
+  }catch(e){}
+}
+function playWrong(){
+  try{
+    const ctx=getAudioCtx(),now=ctx.currentTime;
+    [[220,0,.18],[196,.2,.18]].forEach(([f,t,d])=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.type='sawtooth';o.frequency.value=f;
+      g.gain.setValueAtTime(0,now+t);g.gain.linearRampToValueAtTime(.18,now+t+.03);g.gain.exponentialRampToValueAtTime(.001,now+t+d);
+      o.start(now+t);o.stop(now+t+d+.05);
+    });
+  }catch(e){}
+}
 
 function randInt(a,b){return a+Math.floor(Math.random()*(b-a+1))}
 function genQuestion(usedDenoms){
@@ -160,12 +199,24 @@ function mixedHTML(q){
 function choiceFracHTML(num,denom){
   return`<span class="choice-frac"><span class="choice-frac-top">${num}</span><span class="choice-frac-bar"></span><span class="choice-frac-bot">${denom}</span></span>`;
 }
+function comboLabel(c){
+  const fires=c>=5?'🔥🔥🔥':c>=3?'🔥🔥':'🔥';
+  return`${fires} ${c}콤보`;
+}
 
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 
 function startGame(){
   const usedDenoms=new Set();
-  state={scores:[0,0,0,0],questions:ANIMALS.map(()=>genQuestion(usedDenoms)),locked:[false,false,false,false],timeLeft:TOTAL_SEC,usedDenoms,timerInterval:null};
+  state={
+    scores:[0,0,0,0],
+    combos:[0,0,0,0],
+    questions:ANIMALS.map(()=>genQuestion(usedDenoms)),
+    locked:[false,false,false,false],
+    timeLeft:TOTAL_SEC,
+    usedDenoms,
+    timerInterval:null
+  };
   renderPlayers();showScreen('game-screen');runTimer();
 }
 
@@ -180,6 +231,7 @@ function renderPlayers(){
         <span class="animal-emoji">${a.emoji}</span>
         <span class="animal-name">${a.name}</span>
         <span class="player-score" id="score-${i}">${state.scores[i]}점</span>
+        <span class="combo-badge hidden" id="combo-${i}"></span>
       </div>
       <div class="player-body">
         <div class="question-box" id="qbox-${i}">${mixedHTML(q)}</div>
@@ -194,17 +246,53 @@ function buildChoices(q,pi){
   return q.choices.map(c=>`<button class="choice-btn" onclick="answer(${pi},${c},${q.correctNumer})">${choiceFracHTML(c,q.denom)}</button>`).join('');
 }
 
+function updateComboUI(pi){
+  const c=state.combos[pi];
+  const el=document.getElementById('combo-'+pi);
+  if(c>=2){
+    el.textContent=comboLabel(c);
+    el.classList.remove('hidden','pop');
+    void el.offsetWidth;
+    el.classList.add('pop');
+  }else{
+    el.classList.add('hidden');
+  }
+}
+
+function showScorePopup(pi,points){
+  const header=document.querySelector('#panel-'+pi+' .player-header');
+  const pop=document.createElement('span');
+  pop.className='score-popup';
+  pop.textContent='+'+points;
+  pop.style.color=COLORS[pi][0];
+  header.appendChild(pop);
+  setTimeout(()=>pop.remove(),950);
+}
+
 function answer(pi,chosen,correct){
   if(state.locked[pi])return;
   state.locked[pi]=true;
   const isCorrect=chosen===correct;
-  state.scores[pi]+=isCorrect?10:-10;
+
+  if(isCorrect){
+    state.combos[pi]++;
+    const points=state.combos[pi]*10;
+    state.scores[pi]+=points;
+    showScorePopup(pi,points);
+  }else{
+    state.combos[pi]=0;
+    state.scores[pi]=Math.max(0,state.scores[pi]-10);
+  }
+
   document.getElementById('score-'+pi).textContent=state.scores[pi]+'점';
+  updateComboUI(pi);
+
   const panel=document.getElementById('panel-'+pi);
   panel.classList.remove('panel-flash-correct','panel-flash-wrong');
   void panel.offsetWidth;
   panel.classList.add(isCorrect?'panel-flash-correct':'panel-flash-wrong');
-  if(isCorrect)playCorrect();else playWrong();
+  if(isCorrect)playCorrect(state.combos[pi]);else playWrong();
+
   document.querySelectorAll('#choices-'+pi+' .choice-btn').forEach(btn=>{
     const topEl=btn.querySelector('.choice-frac-top');if(!topEl)return;
     const bVal=parseInt(topEl.textContent);
@@ -212,6 +300,7 @@ function answer(pi,chosen,correct){
     if(bVal===correct)btn.classList.add('correct');
     else if(bVal===chosen&&!isCorrect)btn.classList.add('wrong');
   });
+
   setTimeout(()=>{
     if(state.timeLeft>0){
       state.locked[pi]=false;
@@ -243,9 +332,16 @@ function endGame(){
   const wBox=document.getElementById('winner-box');
   wBox.style.cssText=`background:${wc[1]};border-color:${wc[0]};color:${wc[2]}`;
   const tied=sorted.filter(p=>p.score===winner.score);
-  wBox.innerHTML=tied.length>1?'🏆 공동 우승!<br>'+tied.map(p=>p.emoji+' '+p.name).join(' & ')+'<br><span style="font-size:.7em">'+winner.score+'점</span>':'🏆 우승!<br>'+winner.emoji+' '+winner.name+'<br><span style="font-size:.7em">'+winner.score+'점</span>';
+  wBox.innerHTML=tied.length>1
+    ?'🏆 공동 우승!<br>'+tied.map(p=>p.emoji+' '+p.name).join(' & ')+'<br><span style="font-size:.7em">'+winner.score+'점</span>'
+    :'🏆 우승!<br>'+winner.emoji+' '+winner.name+'<br><span style="font-size:.7em">'+winner.score+'점</span>';
   const medals=['🥇','🥈','🥉','4️⃣'];
-  document.getElementById('rankings').innerHTML=sorted.map((p,ri)=>`<div class="rank-row"><span class="rank-num">${medals[ri]}</span><span class="rank-name">${p.emoji} ${p.name}</span><span class="rank-score" style="color:${COLORS[p.idx][0]}">${p.score}점</span></div>`).join('');
+  document.getElementById('rankings').innerHTML=sorted.map((p,ri)=>`
+    <div class="rank-row">
+      <span class="rank-num">${medals[ri]}</span>
+      <span class="rank-name">${p.emoji} ${p.name}</span>
+      <span class="rank-score" style="color:${COLORS[p.idx][0]}">${p.score}점</span>
+    </div>`).join('');
   showScreen('result-screen');
 }
 function goStart(){showScreen('start-screen');}
