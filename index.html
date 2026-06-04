@@ -1,4 +1,9 @@
-
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>분수 대결!</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;700;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -10,7 +15,8 @@
   --bg:#F8F7F2;--card:#fff;--border:#D3D1C7;
   --text:#2C2C2A;--muted:#888780;
 }
-body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+#app{min-height:100vh;display:flex;flex-direction:column}
 .screen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:16px}
 .screen.active{display:flex}
 
@@ -23,14 +29,14 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .start-btn:hover{opacity:.85}
 .start-btn:active{transform:scale(.97)}
 
-#game-screen{padding:8px 6px;gap:0;justify-content:flex-start;background:var(--bg)}
-.top-bar{width:100%;padding:0 4px 6px}
+#game-screen{padding:8px 6px 8px;gap:0;justify-content:flex-start;background:var(--bg);min-height:100vh;height:100vh}
+.top-bar{width:100%;padding:0 4px 6px;flex-shrink:0}
 #timer-text{font-size:clamp(22px,4vw,36px);font-weight:900;text-align:center;letter-spacing:3px;color:var(--text);margin-bottom:4px}
 .timer-track{width:100%;height:12px;background:#D3D1C7;border-radius:8px;overflow:hidden}
 .timer-fill{height:100%;border-radius:8px;background:#1D9E75;transition:width .5s linear,background .5s}
 
-.players-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
-.player-panel{border-radius:14px;border:2.5px solid;overflow:hidden;display:flex;flex-direction:column;background:var(--card)}
+.players-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;flex:1;min-height:0}
+.player-panel{border-radius:14px;border:2.5px solid;overflow:hidden;display:flex;flex-direction:column;background:var(--card);height:100%}
 .pc1{border-color:var(--p1)}.pc2{border-color:var(--p2)}.pc3{border-color:var(--p3)}.pc4{border-color:var(--p4)}
 
 .panel-flash-correct{animation:flashGreen .7s ease-out}
@@ -38,7 +44,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 @keyframes flashGreen{0%,20%{background:#a8d5b5}100%{background:var(--card)}}
 @keyframes flashRed{0%,20%{background:#f0a8ad}100%{background:var(--card)}}
 
-.player-header{display:flex;flex-direction:column;align-items:center;padding:8px 6px 6px;font-weight:700}
+.player-header{display:flex;flex-direction:column;align-items:center;padding:8px 6px 6px;font-weight:700;flex-shrink:0}
 .pc1 .player-header{background:var(--p1l);color:var(--p1d)}
 .pc2 .player-header{background:var(--p2l);color:var(--p2d)}
 .pc3 .player-header{background:var(--p3l);color:var(--p3d)}
@@ -48,22 +54,24 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .pc1 .player-score{color:var(--p1)}.pc2 .player-score{color:var(--p2)}.pc3 .player-score{color:var(--p3)}.pc4 .player-score{color:var(--p4)}
 .player-score{font-size:clamp(13px,2vw,20px);font-weight:900;margin-top:2px}
 
-.player-body{padding:8px 6px;flex:1;display:flex;flex-direction:column;gap:6px}
-.question-box{text-align:center;padding:10px 4px;border-radius:10px;font-weight:900;font-size:clamp(20px,3.5vw,34px);line-height:1}
+.player-body{padding:10px 8px;flex:1;display:flex;flex-direction:column;min-height:0}
+.question-box{text-align:center;padding:12px 4px;border-radius:10px;font-weight:900;flex-shrink:0}
 .pc1 .question-box{background:var(--p1l);color:var(--p1d)}
 .pc2 .question-box{background:var(--p2l);color:var(--p2d)}
 .pc3 .question-box{background:var(--p3l);color:var(--p3d)}
 .pc4 .question-box{background:var(--p4l);color:var(--p4d)}
 
-.mixed-num{display:inline-flex;align-items:center;gap:5px;vertical-align:middle}
+.mixed-num{display:inline-flex;align-items:center;gap:6px;font-size:clamp(22px,3.5vw,38px);font-weight:900;vertical-align:middle;line-height:1}
 .whole-part{font-size:1em}
-.frac-inline{display:inline-flex;flex-direction:column;align-items:center;line-height:1.1;font-size:0.55em;gap:0}
-.frac-top{display:block;text-align:center;padding-bottom:1px}
-.frac-bar{display:block;width:100%;min-width:1.4em;height:2px;background:currentColor;border-radius:1px}
-.frac-bot{display:block;text-align:center;padding-top:1px}
+.frac-inline{display:inline-flex;flex-direction:column;align-items:center;gap:0;font-size:0.9em;line-height:1.15}
+.frac-top{display:block;text-align:center}
+.frac-bar{display:block;width:100%;min-width:1em;height:2.5px;background:currentColor;border-radius:1px}
+.frac-bot{display:block;text-align:center}
 
-.choices{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:auto}
-.choice-btn{font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:clamp(16px,2.5vw,22px);padding:8px 4px;border-radius:9px;border:2px solid;cursor:pointer;transition:transform .1s;background:#fff;display:flex;align-items:center;justify-content:center;min-height:46px}
+.spacer{flex:1}
+
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex-shrink:0}
+.choice-btn{font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:clamp(15px,2.2vw,20px);padding:8px 4px;border-radius:9px;border:2px solid;cursor:pointer;transition:transform .1s;background:#fff;display:flex;align-items:center;justify-content:center;min-height:46px}
 .choice-btn:active{transform:scale(.93)}
 .choice-btn.correct{background:#EAF3DE !important;border-color:#639922 !important;color:#3B6D11 !important}
 .choice-btn.wrong{background:#FCEBEB !important;border-color:#A32D2D !important;color:#791F1F !important}
@@ -73,10 +81,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .pc3 .choice-btn{border-color:var(--p3);color:var(--p3d)}.pc3 .choice-btn:hover{background:var(--p3l)}
 .pc4 .choice-btn{border-color:var(--p4);color:var(--p4d)}.pc4 .choice-btn:hover{background:var(--p4l)}
 
-.choice-frac{display:inline-flex;flex-direction:column;align-items:center;line-height:1.1;gap:0}
-.choice-frac-top{display:block;text-align:center;padding-bottom:1px}
-.choice-frac-bar{display:block;width:100%;min-width:1.2em;height:2px;background:currentColor;border-radius:1px}
-.choice-frac-bot{display:block;text-align:center;padding-top:1px}
+.choice-frac{display:inline-flex;flex-direction:column;align-items:center;line-height:1.2;gap:0}
+.choice-frac-top{display:block;text-align:center}
+.choice-frac-bar{display:block;width:100%;min-width:1.1em;height:2px;background:currentColor;border-radius:1px}
+.choice-frac-bot{display:block;text-align:center}
 
 #result-screen{background:linear-gradient(135deg,#fff9f0 0%,#f0f8ff 100%);gap:16px}
 .result-title{font-family:'Gaegu',cursive;font-size:clamp(28px,6vw,56px);font-weight:700;text-align:center}
@@ -90,16 +98,14 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .restart-btn:hover{opacity:.85}
 .restart-btn:active{transform:scale(.97)}
 </style>
-
-<h2 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">대분수를 가분수로 바꾸는 4인 동시 플레이 수학 게임</h2>
-
+</head>
+<body>
 <div id="app">
+
 <div id="start-screen" class="screen active">
   <div class="game-title">🔢 분수 대결!<span>대분수 → 가분수 변환 게임</span></div>
   <div class="animal-row">🐹 🐰 🐶 🐱</div>
-  <div class="info-box">
-    ⏱ 제한시간 <b>1분</b> &nbsp;|&nbsp; 정답 <b style="color:#1D9E75">+10점</b> &nbsp;|&nbsp; 오답 <b style="color:#E24B4A">-10점</b>
-  </div>
+  <div class="info-box">⏱ 제한시간 <b>1분</b> &nbsp;|&nbsp; 정답 <b style="color:#1D9E75">+10점</b> &nbsp;|&nbsp; 오답 <b style="color:#E24B4A">-10점</b></div>
   <button class="start-btn" onclick="startGame()">게임 시작!</button>
 </div>
 
@@ -117,6 +123,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   <div class="rankings" id="rankings"></div>
   <button class="restart-btn" onclick="goStart()">다시 하기</button>
 </div>
+
 </div>
 
 <script>
@@ -128,24 +135,11 @@ const ANIMALS=[
 ];
 const TOTAL_SEC=60;
 const COLORS=[['var(--p1)','var(--p1l)','var(--p1d)'],['var(--p2)','var(--p2l)','var(--p2d)'],['var(--p3)','var(--p3l)','var(--p3d)'],['var(--p4)','var(--p4l)','var(--p4d)']];
-let state={};
-let audioCtx=null;
+let state={};let audioCtx=null;
 
 function getAudioCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
-function playCorrect(){
-  try{const ctx=getAudioCtx(),now=ctx.currentTime;
-  [[523.25,0],[659.25,.12],[783.99,.22],[1046.5,.32]].forEach(([f,t])=>{
-    const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);
-    o.type='sine';o.frequency.value=f;
-    g.gain.setValueAtTime(0,now+t);g.gain.linearRampToValueAtTime(0.22,now+t+.04);g.gain.exponentialRampToValueAtTime(.001,now+t+.25);
-    o.start(now+t);o.stop(now+t+.28);});}catch(e){}}
-function playWrong(){
-  try{const ctx=getAudioCtx(),now=ctx.currentTime;
-  [[220,0,.18],[196,.2,.18]].forEach(([f,t,d])=>{
-    const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);
-    o.type='sawtooth';o.frequency.value=f;
-    g.gain.setValueAtTime(0,now+t);g.gain.linearRampToValueAtTime(.18,now+t+.03);g.gain.exponentialRampToValueAtTime(.001,now+t+d);
-    o.start(now+t);o.stop(now+t+d+.05);});}catch(e){}}
+function playCorrect(){try{const ctx=getAudioCtx(),now=ctx.currentTime;[[523.25,0],[659.25,.12],[783.99,.22],[1046.5,.32]].forEach(([f,t])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,now+t);g.gain.linearRampToValueAtTime(.22,now+t+.04);g.gain.exponentialRampToValueAtTime(.001,now+t+.25);o.start(now+t);o.stop(now+t+.28);});}catch(e){}}
+function playWrong(){try{const ctx=getAudioCtx(),now=ctx.currentTime;[[220,0,.18],[196,.2,.18]].forEach(([f,t,d])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sawtooth';o.frequency.value=f;g.gain.setValueAtTime(0,now+t);g.gain.linearRampToValueAtTime(.18,now+t+.03);g.gain.exponentialRampToValueAtTime(.001,now+t+d);o.start(now+t);o.stop(now+t+d+.05);});}catch(e){}}
 
 function randInt(a,b){return a+Math.floor(Math.random()*(b-a+1))}
 function genQuestion(usedDenoms){
@@ -187,8 +181,9 @@ function renderPlayers(){
         <span class="animal-name">${a.name}</span>
         <span class="player-score" id="score-${i}">${state.scores[i]}점</span>
       </div>
-      <div class="player-body" id="body-${i}">
+      <div class="player-body">
         <div class="question-box" id="qbox-${i}">${mixedHTML(q)}</div>
+        <div class="spacer"></div>
         <div class="choices" id="choices-${i}">${buildChoices(q,i)}</div>
       </div>`;
     row.appendChild(div);
@@ -210,10 +205,8 @@ function answer(pi,chosen,correct){
   void panel.offsetWidth;
   panel.classList.add(isCorrect?'panel-flash-correct':'panel-flash-wrong');
   if(isCorrect)playCorrect();else playWrong();
-  const btns=document.querySelectorAll('#choices-'+pi+' .choice-btn');
-  btns.forEach(btn=>{
-    const topEl=btn.querySelector('.choice-frac-top');
-    if(!topEl)return;
+  document.querySelectorAll('#choices-'+pi+' .choice-btn').forEach(btn=>{
+    const topEl=btn.querySelector('.choice-frac-top');if(!topEl)return;
     const bVal=parseInt(topEl.textContent);
     btn.classList.add('locked');
     if(bVal===correct)btn.classList.add('correct');
@@ -250,17 +243,12 @@ function endGame(){
   const wBox=document.getElementById('winner-box');
   wBox.style.cssText=`background:${wc[1]};border-color:${wc[0]};color:${wc[2]}`;
   const tied=sorted.filter(p=>p.score===winner.score);
-  wBox.innerHTML=tied.length>1
-    ?'🏆 공동 우승!<br>'+tied.map(p=>p.emoji+' '+p.name).join(' & ')+'<br><span style="font-size:.7em">'+winner.score+'점</span>'
-    :'🏆 우승!<br>'+winner.emoji+' '+winner.name+'<br><span style="font-size:.7em">'+winner.score+'점</span>';
+  wBox.innerHTML=tied.length>1?'🏆 공동 우승!<br>'+tied.map(p=>p.emoji+' '+p.name).join(' & ')+'<br><span style="font-size:.7em">'+winner.score+'점</span>':'🏆 우승!<br>'+winner.emoji+' '+winner.name+'<br><span style="font-size:.7em">'+winner.score+'점</span>';
   const medals=['🥇','🥈','🥉','4️⃣'];
-  document.getElementById('rankings').innerHTML=sorted.map((p,ri)=>`
-    <div class="rank-row">
-      <span class="rank-num">${medals[ri]}</span>
-      <span class="rank-name">${p.emoji} ${p.name}</span>
-      <span class="rank-score" style="color:${COLORS[p.idx][0]}">${p.score}점</span>
-    </div>`).join('');
+  document.getElementById('rankings').innerHTML=sorted.map((p,ri)=>`<div class="rank-row"><span class="rank-num">${medals[ri]}</span><span class="rank-name">${p.emoji} ${p.name}</span><span class="rank-score" style="color:${COLORS[p.idx][0]}">${p.score}점</span></div>`).join('');
   showScreen('result-screen');
 }
 function goStart(){showScreen('start-screen');}
 </script>
+</body>
+</html>
